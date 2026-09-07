@@ -3,6 +3,17 @@
 Aplicación web integral para la gestión, reserva y venta de entradas y productos de candy bar de un complejo cinematográfico. Desarrollada como Single Page Application (SPA) con Progressive Web App (PWA) utilizando **Angular** (versión moderna basada en Signals y componentes Standalone) y **Supabase** como plataforma Backend-as-a-Service (PostgreSQL, Autenticación y Realtime Engine).
 
 ---
+##  Enunciado del Alcance del Proyecto
+
+| Componente | Descripción |
+| :--- | :--- |
+| **1.1. Título del Proyecto** | Sistema Integral de Gestión y Venta de Entradas (Cinema Manager) |
+| **1.2. Objetivos del Proyecto** | 1. Desarrollar una aplicación web SPA para la venta de tickets de cine y productos de Candy Bar.<br>2. Implementar un programa de fidelización y gestión de crédito interno para los usuarios.<br>3. Automatizar la asignación de salas evitando solapamientos y garantizando 30 minutos de limpieza entre funciones. |
+| **1.3. Riesgos Iniciales Definidos** | 1. **Concurrencia en butacas:** Selección simultánea del mismo asiento por varios usuarios. **Probabilidad:** Media. **Impacto:** Alto.<br>2. **Curva de adopción:** Dificultad técnica al implementar Signals y Supabase Realtime. **Probabilidad:** Media. **Impacto:** Medio.<br>3. **Integridad de datos:** Errores en la validación de código QR (múltiples usos). **Probabilidad:** Baja. **Impacto:** Alto. |
+| **1.4. Fases Principales del Proyecto (EDT)** | El alcance comprende:<br>**1. Fase de Arquitectura y Datos:** Modelado en Supabase, Autenticación y configuración de Angular.<br>**2. Fase de Cliente:** Cartelera, selección de butacas en tiempo real, Candy Bar y pasarela de pago.<br>**3. Fase de Administración:** ABM de funciones, algoritmo de asignación de salas, escáner QR y reportes. |
+| **1.5. Restricciones** | 1. Uso obligatorio de **Angular** y **Supabase**[cite: 4].<br>2. Implementación estricta como **PWA** (Progressive Web App)[cite: 4].<br>3. La aplicación debe estar desplegada con una URL funcional para la entrega[cite: 4].<br>4. El diseño visual debe ser único y producido (se prohíben selectores de fecha nativos estándar)[cite: 4]. |
+| **1.6. Asunciones** | 1. El cliente validará el diseño de interfaz minimalista estructurado en colores negros, blancos y grises para garantizar una experiencia de usuario sobria y clara.<br>2. Se dispondrá de la capa gratuita de Supabase, asumiendo que soportará el tráfico de prueba durante la defensa del TP. |
+| **1.7. Hitos** | 1. Diseño de Base de Datos y Backend aprobado.<br>2. Sincronización en tiempo real de butacas lograda.<br>3. Despliegue de la versión estable en producción. |
 
 ##  1. Especificación Formal de Requerimientos
 
