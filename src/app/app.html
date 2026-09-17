@@ -1,344 +1,539 @@
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * Delete the template below * * * * * * * * * -->
-<!-- * * * * * * * to get started with your project! * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-
-<style>
-  :host {
-    --bright-blue: oklch(51.01% 0.274 263.83);
-    --electric-violet: oklch(53.18% 0.28 296.97);
-    --french-violet: oklch(47.66% 0.246 305.88);
-    --vivid-pink: oklch(69.02% 0.277 332.77);
-    --hot-red: oklch(61.42% 0.238 15.34);
-    --orange-red: oklch(63.32% 0.24 31.68);
-
-    --gray-900: oklch(19.37% 0.006 300.98);
-    --gray-700: oklch(36.98% 0.014 302.71);
-    --gray-400: oklch(70.9% 0.015 304.04);
-
-    --red-to-pink-to-purple-vertical-gradient: linear-gradient(
-      180deg,
-      var(--orange-red) 0%,
-      var(--vivid-pink) 50%,
-      var(--electric-violet) 100%
-    );
-
-    --red-to-pink-to-purple-horizontal-gradient: linear-gradient(
-      90deg,
-      var(--orange-red) 0%,
-      var(--vivid-pink) 50%,
-      var(--electric-violet) 100%
-    );
-
-    --pill-accent: var(--bright-blue);
-
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-      "Segoe UI Symbol";
-    box-sizing: border-box;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    display: block;
-    height: 100dvh;
+<header style="padding: 20px; border-bottom: 1px solid var(--color-gray-light); display: flex; justify-content: space-between; align-items: center;">
+  <h1 style="margin: 0; font-size: 22px;">Cinema Manager</h1>
+  @if (modoAuth() !== 'ninguno' || peliculaSeleccionada()) {
+    <button (click)="volver()" style="padding: 6px 14px; background: transparent; color: var(--color-white, #fff); border: 1px solid var(--color-gray-medium); border-radius: 4px; cursor: pointer; font-size: 13px;">
+      ← Volver al inicio
+    </button>
   }
+</header>
 
-  h1 {
-    font-size: 3.125rem;
-    color: var(--gray-900);
-    font-weight: 500;
-    line-height: 100%;
-    letter-spacing: -0.125rem;
-    margin: 0;
-    font-family: "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-      "Segoe UI Symbol";
-  }
+<main style="padding: 20px;">
+  <!-- BOTÓN PARA ENTRAR/SALIR DEL MODO ADMIN -->
+  <div style="text-align: right; margin-bottom: 20px;">
+    <button (click)="modoAdmin.set(!modoAdmin())" style="padding: 10px 20px; background-color: var(--color-gray-dark); color: var(--color-white); border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+      {{ modoAdmin() ? 'Cerrar Panel Admin' : ' Modo Administrador' }}
+    </button>
+  </div>
 
-  p {
-    margin: 0;
-    color: var(--gray-700);
-  }
+  <!-- 1. PANTALLA DE BIENVENIDA / LOGIN INICIAL -->
+  @if (modoAuth() === 'ninguno' && !peliculaSeleccionada() && !modoAdmin()) {
+    <div style="max-width: 450px; margin: 60px auto; background-color: var(--color-card-bg, #1a1a1a); padding: 40px; border-radius: 12px; border: 1px solid var(--color-gray-medium); text-align: center;">
+      <h2 style="margin-top: 0; color: var(--color-white, #fff); font-size: 26px;">Bienvenido a Cinema Manager</h2>
+      <p style="color: var(--color-gray-dark, #aaa); font-size: 14px; margin-bottom: 30px;">
+        Iniciá sesión o registrate para explorar la cartelera, dejar reseñas y comprar tus entradas.
+      </p>
 
-  main {
-    width: 100%;
-    min-height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-    box-sizing: inherit;
-    position: relative;
-  }
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <button (click)="modoAuth.set('registro')" style="padding: 12px; background-color: var(--color-white, #fff); color: var(--color-black, #000); border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px;">
+          Crear una cuenta (20% OFF)
+        </button>
 
-  .angular-logo {
-    max-width: 9.2rem;
-  }
-
-  .content {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    max-width: 700px;
-    margin-bottom: 3rem;
-  }
-
-  .content h1 {
-    margin-top: 1.75rem;
-  }
-
-  .content p {
-    margin-top: 1.5rem;
-  }
-
-  .divider {
-    width: 1px;
-    background: var(--red-to-pink-to-purple-vertical-gradient);
-    margin-inline: 0.5rem;
-  }
-
-  .pill-group {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    flex-wrap: wrap;
-    gap: 1.25rem;
-  }
-
-  .pill {
-    display: flex;
-    align-items: center;
-    --pill-accent: var(--bright-blue);
-    background: color-mix(in srgb, var(--pill-accent) 5%, transparent);
-    color: var(--pill-accent);
-    padding-inline: 0.75rem;
-    padding-block: 0.375rem;
-    border-radius: 2.75rem;
-    border: 0;
-    transition: background 0.3s ease;
-    font-family: var(--inter-font);
-    font-size: 0.875rem;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 1.4rem;
-    letter-spacing: -0.00875rem;
-    text-decoration: none;
-    white-space: nowrap;
-  }
-
-  .pill:hover {
-    background: color-mix(in srgb, var(--pill-accent) 15%, transparent);
-  }
-
-  .pill-group .pill:nth-child(6n + 1) {
-    --pill-accent: var(--bright-blue);
-  }
-  .pill-group .pill:nth-child(6n + 2) {
-    --pill-accent: var(--electric-violet);
-  }
-  .pill-group .pill:nth-child(6n + 3) {
-    --pill-accent: var(--french-violet);
-  }
-
-  .pill-group .pill:nth-child(6n + 4),
-  .pill-group .pill:nth-child(6n + 5),
-  .pill-group .pill:nth-child(6n + 6) {
-    --pill-accent: var(--hot-red);
-  }
-
-  .pill-group svg {
-    margin-inline-start: 0.25rem;
-  }
-
-  .social-links {
-    display: flex;
-    align-items: center;
-    gap: 0.73rem;
-    margin-top: 1.5rem;
-  }
-
-  .social-links path {
-    transition: fill 0.3s ease;
-    fill: var(--gray-400);
-  }
-
-  .social-links a:hover svg path {
-    fill: var(--gray-900);
-  }
-
-  @media screen and (max-width: 650px) {
-    .content {
-      flex-direction: column;
-      width: max-content;
-    }
-
-    .divider {
-      height: 1px;
-      width: 100%;
-      background: var(--red-to-pink-to-purple-horizontal-gradient);
-      margin-block: 1.5rem;
-    }
-  }
-</style>
-
-<main class="main">
-  <div class="content">
-    <div class="left-side">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 982 239"
-        fill="none"
-        class="angular-logo"
-      >
-        <g clip-path="url(#a)">
-          <path
-            fill="url(#b)"
-            d="M388.676 191.625h30.849L363.31 31.828h-35.758l-56.215 159.797h30.848l13.174-39.356h60.061l13.256 39.356Zm-65.461-62.675 21.602-64.311h1.227l21.602 64.311h-44.431Zm126.831-7.527v70.202h-28.23V71.839h27.002v20.374h1.392c2.782-6.71 7.2-12.028 13.255-15.956 6.056-3.927 13.584-5.89 22.503-5.89 8.264 0 15.465 1.8 21.684 5.318 6.137 3.518 10.964 8.673 14.319 15.382 3.437 6.71 5.074 14.81 4.992 24.383v76.175h-28.23v-71.92c0-8.019-2.046-14.237-6.219-18.819-4.173-4.5-9.819-6.791-17.102-6.791-4.91 0-9.328 1.063-13.174 3.272-3.846 2.128-6.792 5.237-9.001 9.328-2.046 4.009-3.191 8.918-3.191 14.728ZM589.233 239c-10.147 0-18.82-1.391-26.103-4.091-7.282-2.7-13.092-6.382-17.511-10.964-4.418-4.582-7.528-9.655-9.164-15.219l25.448-6.136c1.145 2.372 2.782 4.663 4.991 6.954 2.209 2.291 5.155 4.255 8.837 5.81 3.683 1.554 8.428 2.291 14.074 2.291 8.019 0 14.647-1.964 19.884-5.81 5.237-3.845 7.856-10.227 7.856-19.064v-22.665h-1.391c-1.473 2.946-3.601 5.892-6.383 9.001-2.782 3.109-6.464 5.645-10.965 7.691-4.582 2.046-10.228 3.109-17.101 3.109-9.165 0-17.511-2.209-25.039-6.545-7.446-4.337-13.42-10.883-17.757-19.474-4.418-8.673-6.628-19.473-6.628-32.565 0-13.091 2.21-24.301 6.628-33.383 4.419-9.082 10.311-15.955 17.839-20.7 7.528-4.746 15.874-7.037 25.039-7.037 7.037 0 12.846 1.145 17.347 3.518 4.582 2.373 8.182 5.236 10.883 8.51 2.7 3.272 4.746 6.382 6.137 9.327h1.554v-19.8h27.821v121.749c0 10.228-2.454 18.737-7.364 25.447-4.91 6.709-11.538 11.7-20.048 15.055-8.509 3.355-18.165 4.991-28.884 4.991Zm.245-71.266c5.974 0 11.047-1.473 15.302-4.337 4.173-2.945 7.446-7.118 9.573-12.519 2.21-5.482 3.274-12.027 3.274-19.637 0-7.609-1.064-14.155-3.274-19.8-2.127-5.646-5.318-10.064-9.491-13.255-4.174-3.11-9.329-4.746-15.384-4.746s-11.537 1.636-15.792 4.91c-4.173 3.272-7.365 7.772-9.492 13.418-2.128 5.727-3.191 12.191-3.191 19.392 0 7.2 1.063 13.745 3.273 19.228 2.127 5.482 5.318 9.736 9.573 12.764 4.174 3.027 9.41 4.582 15.629 4.582Zm141.56-26.51V71.839h28.23v119.786h-27.412v-21.273h-1.227c-2.7 6.709-7.119 12.191-13.338 16.446-6.137 4.255-13.747 6.382-22.748 6.382-7.855 0-14.81-1.718-20.783-5.237-5.974-3.518-10.72-8.591-14.075-15.382-3.355-6.709-5.073-14.891-5.073-24.464V71.839h28.312v71.921c0 7.609 2.046 13.664 6.219 18.083 4.173 4.5 9.655 6.709 16.365 6.709 4.173 0 8.183-.982 12.111-3.028 3.927-2.045 7.118-5.072 9.655-9.082 2.537-4.091 3.764-9.164 3.764-15.218Zm65.707-109.395v159.796h-28.23V31.828h28.23Zm44.841 162.169c-7.61 0-14.402-1.391-20.457-4.091-6.055-2.7-10.883-6.791-14.32-12.109-3.518-5.319-5.237-11.946-5.237-19.801 0-6.791 1.228-12.355 3.765-16.773 2.536-4.419 5.891-7.937 10.228-10.637 4.337-2.618 9.164-4.664 14.647-6.055 5.4-1.391 11.046-2.373 16.856-3.027 7.037-.737 12.683-1.391 17.102-1.964 4.337-.573 7.528-1.555 9.574-2.782 1.963-1.309 3.027-3.273 3.027-5.973v-.491c0-5.891-1.718-10.391-5.237-13.664-3.518-3.191-8.51-4.828-15.056-4.828-6.955 0-12.356 1.473-16.447 4.5-4.009 3.028-6.71 6.546-8.183 10.719l-26.348-3.764c2.046-7.282 5.483-13.336 10.31-18.328 4.746-4.909 10.638-8.59 17.511-11.045 6.955-2.455 14.565-3.682 22.912-3.682 5.809 0 11.537.654 17.265 2.045s10.965 3.6 15.711 6.71c4.746 3.109 8.51 7.282 11.455 12.6 2.864 5.318 4.337 11.946 4.337 19.883v80.184h-27.166v-16.446h-.9c-1.719 3.355-4.092 6.464-7.201 9.328-3.109 2.864-6.955 5.237-11.619 6.955-4.828 1.718-10.229 2.536-16.529 2.536Zm7.364-20.701c5.646 0 10.556-1.145 14.729-3.354 4.173-2.291 7.364-5.237 9.655-9.001 2.292-3.763 3.355-7.854 3.355-12.273v-14.155c-.9.737-2.373 1.391-4.5 2.046-2.128.654-4.419 1.145-7.037 1.636-2.619.491-5.155.9-7.692 1.227-2.537.328-4.746.655-6.628.901-4.173.572-8.019 1.472-11.292 2.781-3.355 1.31-5.973 3.11-7.855 5.401-1.964 2.291-2.864 5.318-2.864 8.918 0 5.237 1.882 9.164 5.728 11.782 3.682 2.782 8.51 4.091 14.401 4.091Zm64.643 18.328V71.839h27.412v19.965h1.227c2.21-6.955 5.974-12.274 11.292-16.038 5.319-3.763 11.456-5.645 18.329-5.645 1.555 0 3.355.082 5.237.163 1.964.164 3.601.328 4.91.573v25.938c-1.227-.41-3.109-.819-5.646-1.146a58.814 58.814 0 0 0-7.446-.49c-5.155 0-9.738 1.145-13.829 3.354-4.091 2.209-7.282 5.236-9.655 9.164-2.373 3.927-3.519 8.427-3.519 13.5v70.448h-28.312ZM222.077 39.192l-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
-          />
-          <path
-            fill="url(#c)"
-            d="M388.676 191.625h30.849L363.31 31.828h-35.758l-56.215 159.797h30.848l13.174-39.356h60.061l13.256 39.356Zm-65.461-62.675 21.602-64.311h1.227l21.602 64.311h-44.431Zm126.831-7.527v70.202h-28.23V71.839h27.002v20.374h1.392c2.782-6.71 7.2-12.028 13.255-15.956 6.056-3.927 13.584-5.89 22.503-5.89 8.264 0 15.465 1.8 21.684 5.318 6.137 3.518 10.964 8.673 14.319 15.382 3.437 6.71 5.074 14.81 4.992 24.383v76.175h-28.23v-71.92c0-8.019-2.046-14.237-6.219-18.819-4.173-4.5-9.819-6.791-17.102-6.791-4.91 0-9.328 1.063-13.174 3.272-3.846 2.128-6.792 5.237-9.001 9.328-2.046 4.009-3.191 8.918-3.191 14.728ZM589.233 239c-10.147 0-18.82-1.391-26.103-4.091-7.282-2.7-13.092-6.382-17.511-10.964-4.418-4.582-7.528-9.655-9.164-15.219l25.448-6.136c1.145 2.372 2.782 4.663 4.991 6.954 2.209 2.291 5.155 4.255 8.837 5.81 3.683 1.554 8.428 2.291 14.074 2.291 8.019 0 14.647-1.964 19.884-5.81 5.237-3.845 7.856-10.227 7.856-19.064v-22.665h-1.391c-1.473 2.946-3.601 5.892-6.383 9.001-2.782 3.109-6.464 5.645-10.965 7.691-4.582 2.046-10.228 3.109-17.101 3.109-9.165 0-17.511-2.209-25.039-6.545-7.446-4.337-13.42-10.883-17.757-19.474-4.418-8.673-6.628-19.473-6.628-32.565 0-13.091 2.21-24.301 6.628-33.383 4.419-9.082 10.311-15.955 17.839-20.7 7.528-4.746 15.874-7.037 25.039-7.037 7.037 0 12.846 1.145 17.347 3.518 4.582 2.373 8.182 5.236 10.883 8.51 2.7 3.272 4.746 6.382 6.137 9.327h1.554v-19.8h27.821v121.749c0 10.228-2.454 18.737-7.364 25.447-4.91 6.709-11.538 11.7-20.048 15.055-8.509 3.355-18.165 4.991-28.884 4.991Zm.245-71.266c5.974 0 11.047-1.473 15.302-4.337 4.173-2.945 7.446-7.118 9.573-12.519 2.21-5.482 3.274-12.027 3.274-19.637 0-7.609-1.064-14.155-3.274-19.8-2.127-5.646-5.318-10.064-9.491-13.255-4.174-3.11-9.329-4.746-15.384-4.746s-11.537 1.636-15.792 4.91c-4.173 3.272-7.365 7.772-9.492 13.418-2.128 5.727-3.191 12.191-3.191 19.392 0 7.2 1.063 13.745 3.273 19.228 2.127 5.482 5.318 9.736 9.573 12.764 4.174 3.027 9.41 4.582 15.629 4.582Zm141.56-26.51V71.839h28.23v119.786h-27.412v-21.273h-1.227c-2.7 6.709-7.119 12.191-13.338 16.446-6.137 4.255-13.747 6.382-22.748 6.382-7.855 0-14.81-1.718-20.783-5.237-5.974-3.518-10.72-8.591-14.075-15.382-3.355-6.709-5.073-14.891-5.073-24.464V71.839h28.312v71.921c0 7.609 2.046 13.664 6.219 18.083 4.173 4.5 9.655 6.709 16.365 6.709 4.173 0 8.183-.982 12.111-3.028 3.927-2.045 7.118-5.072 9.655-9.082 2.537-4.091 3.764-9.164 3.764-15.218Zm65.707-109.395v159.796h-28.23V31.828h28.23Zm44.841 162.169c-7.61 0-14.402-1.391-20.457-4.091-6.055-2.7-10.883-6.791-14.32-12.109-3.518-5.319-5.237-11.946-5.237-19.801 0-6.791 1.228-12.355 3.765-16.773 2.536-4.419 5.891-7.937 10.228-10.637 4.337-2.618 9.164-4.664 14.647-6.055 5.4-1.391 11.046-2.373 16.856-3.027 7.037-.737 12.683-1.391 17.102-1.964 4.337-.573 7.528-1.555 9.574-2.782 1.963-1.309 3.027-3.273 3.027-5.973v-.491c0-5.891-1.718-10.391-5.237-13.664-3.518-3.191-8.51-4.828-15.056-4.828-6.955 0-12.356 1.473-16.447 4.5-4.009 3.028-6.71 6.546-8.183 10.719l-26.348-3.764c2.046-7.282 5.483-13.336 10.31-18.328 4.746-4.909 10.638-8.59 17.511-11.045 6.955-2.455 14.565-3.682 22.912-3.682 5.809 0 11.537.654 17.265 2.045s10.965 3.6 15.711 6.71c4.746 3.109 8.51 7.282 11.455 12.6 2.864 5.318 4.337 11.946 4.337 19.883v80.184h-27.166v-16.446h-.9c-1.719 3.355-4.092 6.464-7.201 9.328-3.109 2.864-6.955 5.237-11.619 6.955-4.828 1.718-10.229 2.536-16.529 2.536Zm7.364-20.701c5.646 0 10.556-1.145 14.729-3.354 4.173-2.291 7.364-5.237 9.655-9.001 2.292-3.763 3.355-7.854 3.355-12.273v-14.155c-.9.737-2.373 1.391-4.5 2.046-2.128.654-4.419 1.145-7.037 1.636-2.619.491-5.155.9-7.692 1.227-2.537.328-4.746.655-6.628.901-4.173.572-8.019 1.472-11.292 2.781-3.355 1.31-5.973 3.11-7.855 5.401-1.964 2.291-2.864 5.318-2.864 8.918 0 5.237 1.882 9.164 5.728 11.782 3.682 2.782 8.51 4.091 14.401 4.091Zm64.643 18.328V71.839h27.412v19.965h1.227c2.21-6.955 5.974-12.274 11.292-16.038 5.319-3.763 11.456-5.645 18.329-5.645 1.555 0 3.355.082 5.237.163 1.964.164 3.601.328 4.91.573v25.938c-1.227-.41-3.109-.819-5.646-1.146a58.814 58.814 0 0 0-7.446-.49c-5.155 0-9.738 1.145-13.829 3.354-4.091 2.209-7.282 5.236-9.655 9.164-2.373 3.927-3.519 8.427-3.519 13.5v70.448h-28.312ZM222.077 39.192l-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
-          />
-        </g>
-        <defs>
-          <radialGradient
-            id="c"
-            cx="0"
-            cy="0"
-            r="1"
-            gradientTransform="rotate(118.122 171.182 60.81) scale(205.794)"
-            gradientUnits="userSpaceOnUse"
-          >
-            <stop stop-color="#FF41F8" />
-            <stop offset=".707" stop-color="#FF41F8" stop-opacity=".5" />
-            <stop offset="1" stop-color="#FF41F8" stop-opacity="0" />
-          </radialGradient>
-          <linearGradient
-            id="b"
-            x1="0"
-            x2="982"
-            y1="192"
-            y2="192"
-            gradientUnits="userSpaceOnUse"
-          >
-            <stop stop-color="#F0060B" />
-            <stop offset="0" stop-color="#F0070C" />
-            <stop offset=".526" stop-color="#CC26D5" />
-            <stop offset="1" stop-color="#7702FF" />
-          </linearGradient>
-          <clipPath id="a"><path fill="#fff" d="M0 0h982v239H0z" /></clipPath>
-        </defs>
-      </svg>
-      <h1>Hello, {{ title() }}</h1>
-      <p>Congratulations! Your app is running. 🎉</p>
+        <button (click)="modoAuth.set('invitado')" style="padding: 12px; background-color: transparent; color: var(--color-white, #fff); border: 1px solid var(--color-gray-medium); border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px;">
+          Entrar como Invitado / Cartelera libre
+        </button>
+      </div>
     </div>
-    <div class="divider" role="separator" aria-label="Divider"></div>
-    <div class="right-side">
-      <div class="pill-group">
-        @for (item of [
-          { title: 'Explore the Docs', link: 'https://angular.dev' },
-          { title: 'Learn with Tutorials', link: 'https://angular.dev/tutorials' },
-          { title: 'Prompt and best practices for AI', link: 'https://angular.dev/ai/develop-with-ai'},
-          { title: 'CLI Docs', link: 'https://angular.dev/tools/cli' },
-          { title: 'Angular Language Service', link: 'https://angular.dev/tools/language-service' },
-          { title: 'Angular DevTools', link: 'https://angular.dev/tools/devtools' },
-        ]; track item.title) {
-          <a
-            class="pill"
-            [href]="item.link"
-            target="_blank"
-            rel="noopener"
-          >
-            <span>{{ item.title }}</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="14"
-              viewBox="0 -960 960 960"
-              width="14"
-              fill="currentColor"
-            >
-              <path
-                d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"
-              />
-            </svg>
-          </a>
+  }
+
+  <!-- 2. FORMULARIO DE REGISTRO -->
+  @else if (modoAuth() === 'registro' && !peliculaSeleccionada() && !modoAdmin()) {
+    <div style="max-width: 450px; margin: 20px auto; background-color: var(--color-white); padding: 30px; border-radius: 8px; border: 1px solid var(--color-black);">
+      <h2 style="text-align: center; margin-top: 0; border-bottom: 2px solid var(--color-black); padding-bottom: 10px; color: var(--color-black);">Creá tu cuenta</h2>
+      <p style="text-align: center; color: var(--color-gray-dark); font-size: 13px; margin-bottom: 20px;">Obtené un 20% de descuento en tu primera compra y dejá tus reseñas.</p>
+      
+      <div style="display: flex; flex-direction: column; gap: 15px;">
+        <input type="text" placeholder="Nombre completo" (input)="actualizarNombre($event)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; background-color: var(--color-white); color: var(--color-black);">
+        <input type="date" placeholder="Fecha de nacimiento" (input)="actualizarNacimiento($event)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; background-color: var(--color-white); color: var(--color-black);">
+        <input type="email" placeholder="Correo electrónico" (input)="regEmail.set($any($event.target).value); actualizarEmail($event)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; background-color: var(--color-white); color: var(--color-black);">
+        <input type="password" placeholder="Contraseña (mínimo 6 caracteres)" (input)="regPassword.set($any($event.target).value); actualizarPassword($event)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; background-color: var(--color-white); color: var(--color-black);">
+        
+        <input type="text" placeholder="Tipo de Sangre (Ej: O+, A-)" (input)="regTipoSangre.set($any($event.target).value)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; background-color: var(--color-white); color: var(--color-black);">
+        <input type="text" placeholder="Color de Ojos" (input)="regColorOjos.set($any($event.target).value)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; background-color: var(--color-white); color: var(--color-black);">
+        <input type="number" placeholder="Días de Vacaciones al Año" (input)="regDiasVacaciones.set(+$any($event.target).value)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; background-color: var(--color-white); color: var(--color-black);">
+        
+        <button (click)="registrarClienteYComprar()" style="margin-top: 10px; padding: 15px; background-color: var(--color-black); color: var(--color-white); border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">
+          Confirmar Registro e Ingresar
+        </button>
+
+        <button (click)="modoAuth.set('ninguno')" style="padding: 8px; background: none; border: 1px solid var(--color-black); border-radius: 5px; cursor: pointer; color: var(--color-black);">
+          ← Volver
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- PANEL DE ADMINISTRACIÓN -->
+  @else if (modoAdmin()) {
+    <div style="max-width: 800px; margin: 0 auto; background-color: var(--color-white); padding: 30px; border-radius: 8px; border: 1px solid var(--color-black);">
+      <h2 style="border-bottom: 2px solid var(--color-black); padding-bottom: 10px; margin-top: 0; color: var(--color-black);">Panel de Administración</h2>
+
+      <!-- Pestañas del Admin -->
+      <div style="display: flex; gap: 20px; border-bottom: 1px solid var(--color-gray-medium); padding-bottom: 10px; margin-bottom: 20px;">
+         <button (click)="adminTabActiva.set('funciones')" 
+                 [style.border-bottom]="adminTabActiva() === 'funciones' ? '2px solid var(--color-black)' : 'none'"
+                 [style.font-weight]="adminTabActiva() === 'funciones' ? 'bold' : 'normal'"
+                 style="padding: 10px; border: none; background: none; cursor: pointer; color: var(--color-black);">
+           Programar Funciones
+         </button>
+
+         <button (click)="adminTabActiva.set('candy')" 
+                 [style.border-bottom]="adminTabActiva() === 'candy' ? '2px solid var(--color-black)' : 'none'"
+                 [style.font-weight]="adminTabActiva() === 'candy' ? 'bold' : 'normal'"
+                 style="padding: 10px; border: none; background: none; cursor: pointer; color: var(--color-black);">
+           Candy Bar (Crear Productos)
+         </button>
+      </div>
+
+      <!-- VISTA 1: PROGRAMAR FUNCIONES -->
+      @if (adminTabActiva() === 'funciones') {
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <label style="font-size: 14px; color: var(--color-black);"><strong>Película:</strong></label>
+          <select (change)="seleccionarPeliculaAdmin($event)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; color: var(--color-black); background-color: var(--color-white);">
+            <option value="">Seleccione una película de la base de datos...</option>
+            @for (movie of movies(); track movie.id) {
+              <option [value]="movie.id">{{ movie.title }}</option>
+            }
+          </select>
+
+          <label style="font-size: 14px; color: var(--color-black);"><strong>Fecha y Hora de Inicio:</strong></label>
+          <input type="datetime-local" [value]="adminFecha()" (input)="adminFecha.set($any($event.target).value)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; color: var(--color-black); background-color: var(--color-white);">
+
+          <div style="display: flex; gap: 20px;">
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 5px;">
+              <label style="font-size: 14px; color: var(--color-black);"><strong>Formato:</strong></label>
+              <select [value]="adminFormato()" (change)="adminFormato.set($any($event.target).value)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; color: var(--color-black); background-color: var(--color-white);">
+                <option value="2D">2D</option>
+                <option value="3D">3D</option>
+                <option value="4D">4D</option>
+                <option value="5D">5D</option>
+              </select>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 5px;">
+              <label style="font-size: 14px; color: var(--color-black);"><strong>Idioma:</strong></label>
+              <select [value]="adminIdioma()" (change)="adminIdioma.set($any($event.target).value)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; color: var(--color-black); background-color: var(--color-white);">
+                <option value="Castellano">Castellano</option>
+                <option value="Subtitulada">Subtitulada</option>
+              </select>
+            </div>
+          </div>
+
+          <button (click)="ejecutarAlgoritmo()" style="margin-top: 20px; padding: 15px; background-color: var(--color-black); color: var(--color-white); border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">
+            Programar Función (Asignación Automática de Sala)
+          </button>
+        </div>
+      }
+
+      <!-- VISTA 2: CREAR PRODUCTOS DE CANDY BAR -->
+      @else {
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <h3 style="margin-top: 0; color: var(--color-black);">Nuevo Producto para el Candy Bar</h3>
+          
+          <label style="font-size: 14px; color: var(--color-black);"><strong>Nombre del Producto:</strong></label>
+          <input type="text" placeholder="Ej: Pochoclos Medianos, Gaseosa 500ml..." [value]="adminCandyName()" (input)="adminCandyName.set($any($event.target).value)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; color: var(--color-black); background-color: var(--color-white);">
+
+          <label style="font-size: 14px; color: var(--color-black);"><strong>Categoría:</strong></label>
+          <select [value]="adminCandyCategory()" (change)="adminCandyCategory.set($any($event.target).value)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; color: var(--color-black); background-color: var(--color-white);">
+            <option value="Pochoclos">Pochoclos</option>
+            <option value="Bebidas">Bebidas</option>
+            <option value="Golosinas">Golosinas</option>
+            <option value="Combos">Combos</option>
+          </select>
+
+          <label style="font-size: 14px; color: var(--color-black);"><strong>Precio ($):</strong></label>
+          <input type="number" placeholder="Ej: 3500" [value]="adminCandyPrice()" (input)="adminCandyPrice.set(+$any($event.target).value)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; color: var(--color-black); background-color: var(--color-white);">
+
+          <label style="font-size: 14px; color: var(--color-black);"><strong>URL de la Imagen (Opcional):</strong></label>
+          <input type="text" placeholder="https://..." [value]="adminCandyImage()" (input)="adminCandyImage.set($any($event.target).value)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; color: var(--color-black); background-color: var(--color-white);">
+
+          <button (click)="crearProductoCandy()" style="margin-top: 20px; padding: 15px; background-color: var(--color-black); color: var(--color-white); border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">
+            Guardar Producto en el Candy Bar
+          </button>
+        </div>
+      }
+    </div>
+  }
+  @else {
+    
+    @if (!peliculaSeleccionada()) {
+      <!-- 3. CARTELERA Y BUSCADOR -->
+      <h2 style="margin-bottom: 20px;">Cartelera de hoy</h2>
+      
+      <div style="display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap;">
+        <input type="text" 
+               placeholder="Buscar película por título o sinopsis..." 
+               (input)="busquedaTexto.set($any($event.target).value)" 
+               style="flex: 2; min-width: 250px; padding: 12px; border: 1px solid var(--color-gray-medium); border-radius: 6px; font-size: 14px; background-color: var(--color-white); color: var(--color-black);">
+        
+        <select (change)="generoSeleccionado.set($any($event.target).value)" 
+                style="flex: 1; min-width: 180px; padding: 12px; border: 1px solid var(--color-gray-medium); border-radius: 6px; font-size: 14px; background-color: var(--color-white); color: var(--color-black);">
+          <option value="">Todos los géneros</option>
+          <option value="Acción">Acción</option>
+          <option value="Ciencia Ficción">Ciencia Ficción</option>
+          <option value="Drama">Drama</option>
+          <option value="Crimen">Crimen</option>
+          <option value="Terror">Terror</option>
+          <option value="Aventura">Aventura</option>
+          <option value="Thriller">Thriller</option>
+        </select>
+      </div>
+
+      <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; max-width: 1400px; margin: 0 auto;">
+        @for (movie of movies(); track movie.id) {
+          <div style="border: 1px solid #e5e7eb; padding: 16px; width: 300px; border-radius: 12px; background-color: var(--color-white); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);">
+            
+            @if (movie.poster_url) {
+              <img [src]="movie.poster_url" alt="{{ movie.title }}" style="width: 100%; height: 350px; object-fit: cover; border-radius: 8px; margin-bottom: 12px;">
+            } @else {
+              <div style="width: 100%; height: 350px; background-color: var(--color-gray-light); display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 12px; color: var(--color-gray-dark); font-size: 14px;">
+                Sin cartel
+              </div>
+            }
+
+            <h3 style="margin-top: 0; color: var(--color-black);">{{ movie.title }}</h3>
+            <p style="color: var(--color-gray-dark); font-size: 14px;">{{ movie.synopsis }}</p>
+            
+            <div style="margin-top: 15px; font-size: 13px; color: var(--color-gray-dark);">
+              <p style="margin: 5px 0;"><strong>Duración:</strong> {{ movie.duration_minutes }} min</p>
+              <p style="margin: 5px 0;"><strong>Estreno:</strong> {{ movie.release_date }}</p>
+              <p style="margin: 5px 0;"><strong>Género:</strong> {{ movie.genres?.join(', ') }}</p>
+            </div>
+            
+            <button (click)="seleccionarPelicula(movie)" style="margin-top: 15px; width: 100%; padding: 10px; background-color: var(--color-black); color: var(--color-white); border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+              Comprar Entradas
+            </button>
+          </div>
+        } @empty {
+          <p style="color: var(--color-gray-medium);">No se encontraron películas con esos criterios.</p>
         }
       </div>
-      <div class="social-links">
-        <a
-          href="https://github.com/angular/angular"
-          aria-label="Github"
-          target="_blank"
-          rel="noopener"
-        >
-          <svg
-            width="25"
-            height="24"
-            viewBox="0 0 25 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            alt="Github"
-          >
-            <path
-              d="M12.3047 0C5.50634 0 0 5.50942 0 12.3047C0 17.7423 3.52529 22.3535 8.41332 23.9787C9.02856 24.0946 9.25414 23.7142 9.25414 23.3871C9.25414 23.0949 9.24389 22.3207 9.23876 21.2953C5.81601 22.0377 5.09414 19.6444 5.09414 19.6444C4.53427 18.2243 3.72524 17.8449 3.72524 17.8449C2.61064 17.082 3.81137 17.0973 3.81137 17.0973C5.04697 17.1835 5.69604 18.3647 5.69604 18.3647C6.79321 20.2463 8.57636 19.7029 9.27978 19.3881C9.39052 18.5924 9.70736 18.0499 10.0591 17.7423C7.32641 17.4347 4.45429 16.3765 4.45429 11.6618C4.45429 10.3185 4.9311 9.22133 5.72065 8.36C5.58222 8.04931 5.16694 6.79833 5.82831 5.10337C5.82831 5.10337 6.85883 4.77319 9.2121 6.36459C10.1965 6.09082 11.2424 5.95546 12.2883 5.94931C13.3342 5.95546 14.3801 6.09082 15.3644 6.36459C17.7023 4.77319 18.7328 5.10337 18.7328 5.10337C19.3942 6.79833 18.9789 8.04931 18.8559 8.36C19.6403 9.22133 20.1171 10.3185 20.1171 11.6618C20.1171 16.3888 17.2409 17.4296 14.5031 17.7321C14.9338 18.1012 15.3337 18.8559 15.3337 20.0084C15.3337 21.6552 15.3183 22.978 15.3183 23.3779C15.3183 23.7009 15.5336 24.0854 16.1642 23.9623C21.0871 22.3484 24.6094 17.7341 24.6094 12.3047C24.6094 5.50942 19.0999 0 12.3047 0Z"
-            />
-          </svg>
-        </a>
-        <a
-          href="https://x.com/angular"
-          aria-label="X"
-          target="_blank"
-          rel="noopener"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            alt="X"
-          >
-            <path
-              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
-            />
-          </svg>
-        </a>
-        <a
-          href="https://www.youtube.com/channel/UCbn1OgGei-DV7aSRo_HaAiw"
-          aria-label="Youtube"
-          target="_blank"
-          rel="noopener"
-        >
-          <svg
-            width="29"
-            height="20"
-            viewBox="0 0 29 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            alt="Youtube"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M27.4896 1.52422C27.9301 1.96749 28.2463 2.51866 28.4068 3.12258C29.0004 5.35161 29.0004 10 29.0004 10C29.0004 10 29.0004 14.6484 28.4068 16.8774C28.2463 17.4813 27.9301 18.0325 27.4896 18.4758C27.0492 18.9191 26.5 19.2389 25.8972 19.4032C23.6778 20 14.8068 20 14.8068 20C14.8068 20 5.93586 20 3.71651 19.4032C3.11363 19.2389 2.56449 18.9191 2.12405 18.4758C1.68361 18.0325 1.36732 17.4813 1.20683 16.8774C0.613281 14.6484 0.613281 10 0.613281 10C0.613281 10 0.613281 5.35161 1.20683 3.12258C1.36732 2.51866 1.68361 1.96749 2.12405 1.52422C2.56449 1.08095 3.11363 0.76113 3.71651 0.596774C5.93586 0 14.8068 0 14.8068 0C14.8068 0 23.6778 0 25.8972 0.596774C26.5 0.76113 27.0492 1.08095 27.4896 1.52422ZM19.3229 10L11.9036 5.77905V14.221L19.3229 10Z"
-            />
-          </svg>
-        </a>
+    } 
+      
+    @else if (peliculaSeleccionada() && !funcionSeleccionada()) {
+      <!-- PASO INTERMEDIO: SELECCIÓN DE FUNCIÓN Y RESEÑAS -->
+      <div style="max-width: 900px; margin: 0 auto; text-align: center;">
+        
+        <div style="display: flex; gap: 25px; background: var(--color-card-bg, #1a1a1a); padding: 25px; border-radius: 12px; border: 1px solid var(--color-gray-medium); text-align: left; margin-bottom: 30px; align-items: center;">
+          @if (peliculaSeleccionada().poster_url) {
+            <img [src]="peliculaSeleccionada().poster_url" alt="Poster" style="width: 150px; height: 220px; object-fit: cover; border-radius: 8px;">
+          }
+          <div>
+            <h2 style="margin-top: 0; color: var(--color-white, #fff);">{{ peliculaSeleccionada().title }}</h2>
+            <p style="color: var(--color-gray-dark, #aaa); font-size: 14px; line-height: 1.5;">{{ peliculaSeleccionada().synopsis }}</p>
+            <div style="margin-top: 15px; font-size: 14px;">
+              <p style="margin: 5px 0;">⭐ <strong>Puntuación Promedio:</strong> <span style="color: #facc15; font-size: 16px; font-weight: bold;">{{ promedioEstrellas() }}</span> / 5</p>
+              <p style="margin: 5px 0; color: var(--color-gray-dark, #aaa);"><strong>Duración:</strong> {{ peliculaSeleccionada().duration_minutes }} min</p>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="text-align: left; border-bottom: 1px solid var(--color-gray-medium); padding-bottom: 8px; margin-bottom: 20px; color: var(--color-white, #fff);">Horarios Disponibles</h3>
+        
+        <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-bottom: 40px;">
+          @for (funcion of funcionesPelicula(); track funcion.id) {
+            <div style="border: 1px solid var(--color-gray-medium); padding: 20px; border-radius: 8px; background-color: var(--color-card-bg, #1a1a1a); width: 240px; text-align: left;">
+              <h4 style="margin-top: 0; font-size: 16px; color: var(--color-white, #fff);">{{ funcion.inicio | date:'dd/MM/yyyy HH:mm' }}</h4>
+              <p style="margin: 5px 0; font-size: 13px; color: var(--color-gray-dark, #aaa);">
+                <strong>Sala:</strong> {{ funcion.sala_id }} <br>
+                <strong>Formato:</strong> {{ funcion.formato }} <br>
+                <strong>Idioma:</strong> {{ funcion.idioma }}
+              </p>
+              <button (click)="seleccionarFuncion(funcion)" style="margin-top: 15px; width: 100%; padding: 10px; background-color: var(--color-white, #fff); color: var(--color-black, #000); border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                Elegir Horario
+              </button>
+            </div>
+          } @empty {
+            <p style="color: var(--color-gray-dark, #aaa);">No hay funciones programadas para esta película.</p>
+          }
+        </div>
+
+        <!-- SECCIÓN DE RESEÑAS Y CALIFICACIONES -->
+        <div style="background: var(--color-card-bg, #1a1a1a); padding: 25px; border-radius: 12px; border: 1px solid var(--color-gray-medium); text-align: left; margin-bottom: 30px;">
+          <h3 style="margin-top: 0; border-bottom: 1px solid var(--color-gray-medium); padding-bottom: 10px; color: var(--color-white, #fff);">Reseñas de la comunidad</h3>
+          
+          <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border: 1px solid var(--color-gray-medium); margin-bottom: 20px;">
+            <h4 style="margin-top: 0; font-size: 14px; color: var(--color-white, #fff);">Dejá tu calificación</h4>
+            
+            <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
+              <label style="font-size: 13px; color: var(--color-gray-dark, #aaa);">Estrellas (1 al 5):</label>
+              <select [value]="nuevoRating()" (change)="cambiarRating($event)" style="padding: 8px; border-radius: 4px; background: var(--color-card-bg, #1a1a1a); color: var(--color-white, #fff); border: 1px solid var(--color-gray-medium);">
+                <option value="5">⭐⭐⭐⭐⭐ (5 - Excelente)</option>
+                <option value="4">⭐⭐⭐⭐ (4 - Muy buena)</option>
+                <option value="3">⭐⭐⭐ (3 - Buena)</option>
+                <option value="2">⭐⭐ (2 - Regular)</option>
+                <option value="1">⭐ (1 - Mala)</option>
+              </select>
+            </div>
+
+            <textarea [value]="nuevoComentario()" (input)="cambiarComentario($event)" placeholder="Escribí un comentario corto sobre la película..." rows="2" style="width: 100%; padding: 10px; border-radius: 4px; background: var(--color-card-bg, #1a1a1a); color: var(--color-white, #fff); border: 1px solid var(--color-gray-medium); box-sizing: border-box; resize: vertical; margin-bottom: 10px;"></textarea>
+
+            <button (click)="enviarResena()" style="padding: 8px 16px; background-color: var(--color-white, #fff); color: var(--color-black, #000); border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px;">
+              Publicar Resena
+            </button>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            @for (resena of resenasPelicula(); track resena.id) {
+              <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; border: 1px solid var(--color-gray-medium);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                  <span style="color: #facc15; font-size: 14px;">{{ generarEstrellas(resena.rating) }}</span>
+                  <span style="font-size: 11px; color: var(--color-gray-dark, #aaa);">{{ resena.created_at | date:'dd/MM/yyyy' }}</span>
+                </div>
+                <p style="margin: 0; font-size: 13px; color: var(--color-white, #fff);">{{ resena.comment }}</p>
+              </div>
+            } @empty {
+              <p style="color: var(--color-gray-dark, #aaa); font-size: 13px; margin: 0; text-align: center;">Todavía no hay reseñas para esta película. ¡Sé el primero en calificarla!</p>
+            }
+          </div>
+        </div>
+
+        <button (click)="volver()" style="padding: 10px 20px; background-color: transparent; color: var(--color-white, #fff); border: 1px solid var(--color-white, #fff); border-radius: 5px; cursor: pointer; font-weight: bold;">
+          ← Volver a la cartelera
+        </button>
       </div>
-    </div>
-  </div>
+    }
+
+    @else if (funcionSeleccionada() && !mostrarCheckout()) {
+      <!-- SELECCIÓN DE BUTACAS -->
+      <div>
+        <h2 style="margin-bottom: 20px;">Entradas para: {{ peliculaSeleccionada().title }}</h2>
+        
+        <div style="overflow-x: auto; padding: 20px 0;">
+          <div style="min-width: 800px; display: flex; flex-direction: column; gap: 8px; align-items: center;">
+            
+            @for (fila of asientos(); track fila.letra) {
+              <div style="display: flex; gap: 40px; align-items: center; justify-content: center; width: 100%;">
+                 
+                 <div style="width: 20px; font-weight: bold; color: var(--color-gray-dark); text-align: center;">{{ fila.letra }}</div>
+                 
+                 <div style="display: flex; gap: 4px; width: 120px; justify-content: flex-end;">
+                   @for (asiento of fila.bloqueIzq; track asiento.id) {
+                     <button (click)="toggleAsiento(asiento)"
+                            [disabled]="asiento.ocupada"
+                            [style.background-color]="asiento.ocupada ? '#333333' : (asiento.seleccionada ? '#22c55e' : (asiento.tipo === 'vip' ? '#f59e0b' : 'var(--color-white)'))"
+                            [style.color]="asiento.ocupada ? '#666666' : (asiento.seleccionada ? '#000000' : 'var(--color-black)')"
+                            [style.border]="asiento.ocupada ? '1px solid #222222' : (asiento.tipo === 'accesible' ? '2px dashed var(--color-gray-dark)' : (asiento.tipo === 'vip' ? '2px solid #b45309' : '1px solid var(--color-gray-medium)'))"
+                            [style.border-radius]="asiento.tipo === 'accesible' ? '50%' : '3px'"
+                            [style.cursor]="asiento.ocupada ? 'not-allowed' : 'pointer'"
+                            style="width: 26px; height: 26px; padding: 0; font-size: 10px; font-weight: bold; transition: 0.2s;">
+                       {{ asiento.numero }}
+                     </button>
+                   }
+                 </div>
+
+                 <div style="display: flex; gap: 4px; width: 600px; justify-content: center;">
+                   @for (asiento of fila.bloqueCentro; track asiento.id) {
+                     <button (click)="toggleAsiento(asiento)" 
+                            [disabled]="asiento.ocupada"
+                            [style.background-color]="asiento.ocupada ? '#333333' : (asiento.seleccionada ? '#22c55e' : (asiento.tipo === 'vip' ? '#f59e0b' : 'var(--color-white)'))"
+                            [style.color]="asiento.ocupada ? '#666666' : (asiento.seleccionada ? '#000000' : 'var(--color-black)')"
+                            [style.border]="asiento.ocupada ? '1px solid #222222' : (asiento.tipo === 'accesible' ? '2px dashed var(--color-gray-dark)' : (asiento.tipo === 'vip' ? '2px solid #b45309' : '1px solid var(--color-gray-medium)'))"
+                            [style.border-radius]="asiento.tipo === 'accesible' ? '50%' : '3px'"
+                            [style.cursor]="asiento.ocupada ? 'not-allowed' : 'pointer'"
+                            style="width: 26px; height: 26px; padding: 0; font-size: 10px; font-weight: bold; transition: 0.2s;">
+                       {{ asiento.numero }}
+                     </button>
+                   }
+                 </div>
+
+                 <div style="display: flex; gap: 4px; width: 120px; justify-content: flex-start;">
+                   @for (asiento of fila.bloqueDer; track asiento.id) {
+                     <button (click)="toggleAsiento(asiento)"
+                            [disabled]="asiento.ocupada"
+                            [style.background-color]="asiento.ocupada ? '#333333' : (asiento.seleccionada ? '#22c55e' : (asiento.tipo === 'vip' ? '#f59e0b' : 'var(--color-white)'))"
+                            [style.color]="asiento.ocupada ? '#666666' : (asiento.seleccionada ? '#000000' : 'var(--color-black)')"
+                            [style.border]="asiento.ocupada ? '1px solid #222222' : (asiento.tipo === 'accesible' ? '2px dashed var(--color-gray-dark)' : (asiento.tipo === 'vip' ? '2px solid #b45309' : '1px solid var(--color-gray-medium)'))"
+                            [style.border-radius]="asiento.tipo === 'accesible' ? '50%' : '3px'"
+                            [style.cursor]="asiento.ocupada ? 'not-allowed' : 'pointer'"
+                            style="width: 26px; height: 26px; padding: 0; font-size: 10px; font-weight: bold; transition: 0.2s;">
+                       {{ asiento.numero }}
+                     </button>
+                   }
+                 </div>
+
+                 <div style="width: 20px; font-weight: bold; color: var(--color-gray-dark); text-align: center;">{{ fila.letra }}</div>
+              </div>
+            }
+          </div>
+          
+          <div style="margin: 30px auto; max-width: 600px; text-align: center; padding: 10px; background-color: var(--color-gray-light); border: 1px solid var(--color-gray-medium); border-radius: 5px; color: var(--color-gray-dark);">
+            <strong>PANTALLA</strong>
+          </div>
+
+          <!-- LEYENDA DE COLORES ACTUALIZADA -->
+          <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px; font-size: 14px; color: var(--color-gray-dark); flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 15px; height: 15px; border: 1px solid var(--color-gray-medium); background-color: var(--color-white); border-radius: 3px;"></div> Normal
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 15px; height: 15px; background-color: #f59e0b; border: 1px solid #b45309; border-radius: 3px;"></div> VIP
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 15px; height: 15px; border: 2px dashed var(--color-gray-dark); border-radius: 50%;"></div> Accesible
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 15px; height: 15px; background-color: #22c55e; border-radius: 3px;"></div> Seleccionada
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 15px; height: 15px; background-color: #333333; border: 1px solid #222222; border-radius: 3px;"></div> Ocupada
+            </div>
+          </div>
+        </div>
+        
+        @if (asientosSeleccionados().length > 0) {
+          <div style="margin: 40px auto; max-width: 600px; padding: 25px; border: 1px solid #444; border-radius: 8px; background-color: #1e1e1e; color: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            
+            <h3 style="margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 10px; color: #fff;">Resumen de tu selección</h3>
+            
+            <p style="color: #ccc;">
+              <strong>Butacas elegidas:</strong>
+              <span style="display: inline-block; background: #333; border: 1px solid #555; color: #22c55e; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 14px;">
+                {{ asientosElegidosTexto() }}
+              </span>
+            </p>
+            
+            @if (tieneVip()) {
+              <div style="margin: 15px 0; padding: 12px; border-left: 4px solid #f59e0b; background-color: rgba(245,158,11,0.1); font-size: 14px; color: #fde68a;">
+                <strong>Aviso:</strong> Tenés butacas VIP (Filas R, S, T) en tu selección. Estas ubicaciones tienen un valor superior al de la entrada general.
+              </div>
+            }
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px;">
+              <h2 style="margin: 0; color: #fff;">Total: ${{ subtotal() }}</h2>
+              
+              <button (click)="continuarCompra(); cargarProductosCandyCliente();" style="padding: 12px 24px; background-color: #22c55e; color: #000; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s;">
+                Continuar →
+              </button>
+            </div>
+
+          </div>
+        }
+
+        <button (click)="volverASala()" style="margin-top: 20px; padding: 10px 20px; background-color: var(--color-white); color: var(--color-black); border: 1px solid var(--color-black); border-radius: 5px; cursor: pointer; font-weight: bold;">
+          ← Volver a la selección de horario
+        </button>
+      </div>
+    }
+
+    @else {
+      <!-- CHECKOUT / INVITADO / REGISTRO / FACTURA -->
+      <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+        
+        <!-- El formulario de pago solo se muestra SI NO se generó la factura aún -->
+        @if (!facturaGenerada()) {
+          
+          <!-- SECCIÓN CANDY BAR PARA EL CLIENTE -->
+          <div style="margin-bottom: 30px; background-color: var(--color-card-bg, #1a1a1a); padding: 25px; border-radius: 12px; border: 1px solid var(--color-gray-medium); text-align: left; color: var(--color-white);">
+            <h3 style="margin-top: 0; text-align: center; border-bottom: 1px solid var(--color-gray-medium); padding-bottom: 10px;">🍿 Agregá algo rico a tu función</h3>
+            
+            @if (candyProductsList().length === 0) {
+              <p style="text-align: center; color: var(--color-gray-dark, #aaa); margin: 20px 0;">Cargando productos del Candy Bar...</p>
+            } @else {
+              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
+                @for (prod of candyProductsList(); track prod.id) {
+                  <div style="background: #252525; padding: 15px; border-radius: 8px; border: 1px solid var(--color-gray-medium); display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                      <span style="font-size: 11px; background: #333; padding: 3px 6px; border-radius: 4px; color: #ccc;">{{ prod.category }}</span>
+                      <h4 style="margin: 10px 0 5px 0; font-size: 16px;">{{ prod.name }}</h4>
+                      <p style="color: #4ade80; font-weight: bold; margin: 0 0 15px 0;">${{ prod.price }}</p>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: #1a1a1a; padding: 5px 10px; border-radius: 6px;">
+                      <button (click)="quitarDelCandy(prod)" style="background: #ef4444; color: white; border: none; width: 30px; height: 30px; border-radius: 4px; font-weight: bold; cursor: pointer;">-</button>
+                      <span style="font-weight: bold;">{{ carritoCandy()[prod.id]?.cantidad || 0 }}</span>
+                      <button (click)="agregarAlCandy(prod)" style="background: #22c55e; color: white; border: none; width: 30px; height: 30px; border-radius: 4px; font-weight: bold; cursor: pointer;">+</button>
+                    </div>
+                  </div>
+                }
+              </div>
+
+              @if (subtotalCandy() > 0) {
+                <div style="margin-top: 15px; padding: 12px; background: #222; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                  <span><strong>Total Snacks:</strong></span>
+                  <span style="color: #4ade80; font-size: 16px; font-weight: bold;">${{ subtotalCandy() }}</span>
+                </div>
+              }
+            }
+          </div>
+
+          <h2 style="margin-bottom: 10px; color: var(--color-white, #fff);">¿Cómo querés continuar?</h2>
+          
+          <!-- Si el usuario se registró, aplicamos el 20% en las entradas y mostramos un botón directo -->
+          @if (modoAuth() === 'registrado') {
+            <div style="max-width: 450px; margin: 0 auto; background-color: var(--color-card-bg, #1a1a1a); padding: 30px; border-radius: 12px; border: 1px solid var(--color-gray-medium); text-align: left;">
+              <h3 style="margin-top: 0; text-align: center; color: #4ade80;">¡Descuento de Usuario Registrado (20% OFF)!</h3>
+              <p style="color: var(--color-gray-dark, #aaa); font-size: 14px; text-align: center; margin-bottom: 20px;">
+                Entradas: <span style="text-decoration: line-through;">${{ subtotal() }}</span> <strong>${{ subtotal() * 0.8 }}</strong><br>
+                Snacks: <strong>${{ subtotalCandy() }}</strong>
+              </p>
+              
+              <div style="font-size: 18px; font-weight: bold; text-align: center; margin-bottom: 20px; color: #fff;">
+                Total Final: ${{ (subtotal() * 0.8) + subtotalCandy() }}
+              </div>
+
+              <button (click)="finalizarCompraRegistrado()" style="width: 100%; padding: 12px; background: #22c55e; color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px;">
+                Confirmar y Generar QR
+              </button>
+            </div>
+          } 
+          
+          <!-- Si entró como invitado, sí le pedimos el correo -->
+          @else {
+            <p style="color: var(--color-gray-dark, #aaa); margin-bottom: 30px;">Estás a un paso de confirmar tu compra por <strong>${{ subtotal() + subtotalCandy() }}</strong></p>
+
+            <div style="max-width: 450px; margin: 0 auto; background-color: var(--color-card-bg, #1a1a1a); padding: 30px; border-radius: 12px; border: 1px solid var(--color-gray-medium); text-align: left;">
+              <h3 style="margin-top: 0; text-align: center; color: var(--color-white, #fff);">Compra como Invitado</h3>
+              
+              <div style="margin-bottom: 20px;">
+                <label style="font-size: 14px; display: block; margin-bottom: 8px; color: var(--color-gray-dark, #aaa);">Correo electrónico</label>
+                <input type="email" [value]="emailInvitadoInput()" (input)="emailInvitadoInput.set($any($event.target).value)" placeholder="tucorreo@email.com" style="width: 100%; padding: 12px; border: 1px solid var(--color-gray-medium); border-radius: 6px; background-color: var(--color-card-bg, #1a1a1a); color: var(--color-white, #fff); box-sizing: border-box;">
+              </div>
+
+              <button (click)="finalizarCompraInvitado()" style="width: 100%; padding: 12px; background: var(--color-white, #fff); color: var(--color-black, #000); border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px;">
+                Finalizar Compra (${{ subtotal() + subtotalCandy() }})
+              </button>
+            </div>
+          }
+        }
+
+        <!-- FACTURA DE COMPRA -->
+        @if (mostrarCheckout() && facturaGenerada()) {
+          <div style="max-width: 500px; margin: 20px auto; background-color: var(--color-white); padding: 30px; border-radius: 8px; border: 1px solid var(--color-black); text-align: center; color: var(--color-black);">
+            <h2 style="border-bottom: 2px solid var(--color-black); padding-bottom: 10px; margin-top: 0;">Factura de Compra</h2>
+            
+            <div style="text-align: left; margin: 20px 0; font-size: 14px; display: flex; flex-direction: column; gap: 8px;">
+              <p><strong>Cine:</strong> Cinema Manager</p>
+              <p><strong>Película:</strong> {{ peliculaSeleccionada()?.title }}</p>
+              <p><strong>Asientos:</strong> {{ asientosElegidosTexto() }}</p>
+              
+              @if (subtotalCandy() > 0) {
+                <p><strong>Snacks / Candy Bar:</strong> Incluidos en la orden</p>
+              }
+
+              <p style="font-size: 16px; margin-top: 10px;"><strong>Total Abonado:</strong> ${{ (subtotal() * (modoAuth() === 'registrado' ? 0.8 : 1)) + subtotalCandy() }}</p>
+            </div>
+
+            <div style="margin: 20px 0; padding: 15px; border: 1px dashed var(--color-black); display: inline-block; background-color: #fff; border-radius: 8px;">
+              <qrcode [qrdata]="codigoQRFactura()" [width]="160" [errorCorrectionLevel]="'M'"></qrcode>
+              <p style="font-size: 12px; margin-top: 8px; color: #555;">
+                Código QR para retirar entradas y Candy Bar<br>
+                <strong>{{ codigoQRFactura() }}</strong>
+              </p>
+            </div>
+
+            <div>
+              <button (click)="volver()" style="padding: 12px 25px; background-color: var(--color-black); color: var(--color-white); border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">
+                Volver a la Cartelera
+              </button>
+            </div>
+          </div>
+        }
+
+        @if (!facturaGenerada()) {
+          <button (click)="volverASala()" style="margin-top: 40px; padding: 10px 20px; background-color: transparent; color: var(--color-gray-dark); border: none; text-decoration: underline; cursor: pointer;">
+            ← Volver a la selección de butacas
+          </button>
+        }
+      </div>
+    }
+  }
 </main>
-
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content above * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-
-
-<router-outlet />
