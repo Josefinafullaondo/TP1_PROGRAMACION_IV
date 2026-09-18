@@ -63,11 +63,12 @@
   }
 
   <!-- PANEL DE ADMINISTRACIÓN -->
+ <!-- PANEL DE ADMINISTRACIÓN -->
   @else if (modoAdmin()) {
     <div style="max-width: 800px; margin: 0 auto; background-color: var(--color-white); padding: 30px; border-radius: 8px; border: 1px solid var(--color-black);">
       <h2 style="border-bottom: 2px solid var(--color-black); padding-bottom: 10px; margin-top: 0; color: var(--color-black);">Panel de Administración</h2>
 
-      <!-- Pestañas del Admin -->
+      <!-- Pestañas del Admin (¡TODAS JUNTAS AQUÍ ADENTRO!) -->
       <div style="display: flex; gap: 20px; border-bottom: 1px solid var(--color-gray-medium); padding-bottom: 10px; margin-bottom: 20px;">
          <button (click)="adminTabActiva.set('funciones')" 
                  [style.border-bottom]="adminTabActiva() === 'funciones' ? '2px solid var(--color-black)' : 'none'"
@@ -82,6 +83,13 @@
                  style="padding: 10px; border: none; background: none; cursor: pointer; color: var(--color-black);">
            Candy Bar (Crear Productos)
          </button>
+
+         <button (click)="adminTabActiva.set('descuentos')" 
+                 [style.border-bottom]="adminTabActiva() === 'descuentos' ? '2px solid var(--color-black)' : 'none'"
+                 [style.font-weight]="adminTabActiva() === 'descuentos' ? 'bold' : 'normal'"
+                 style="padding: 10px; border: none; background: none; cursor: pointer; color: var(--color-black);">
+           Cupones y Descuentos
+         </button>
       </div>
 
       <!-- VISTA 1: PROGRAMAR FUNCIONES -->
@@ -90,7 +98,7 @@
           <label style="font-size: 14px; color: var(--color-black);"><strong>Película:</strong></label>
           <select (change)="seleccionarPeliculaAdmin($event)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; color: var(--color-black); background-color: var(--color-white);">
             <option value="">Seleccione una película de la base de datos...</option>
-            @for (movie of movies(); track movie.id) {
+           @for (movie of peliculasFiltradas(); track movie.id) {
               <option [value]="movie.id">{{ movie.title }}</option>
             }
           </select>
@@ -124,7 +132,7 @@
       }
 
       <!-- VISTA 2: CREAR PRODUCTOS DE CANDY BAR -->
-      @else {
+      @else if (adminTabActiva() === 'candy') {
         <div style="display: flex; flex-direction: column; gap: 15px;">
           <h3 style="margin-top: 0; color: var(--color-black);">Nuevo Producto para el Candy Bar</h3>
           
@@ -150,6 +158,24 @@
           </button>
         </div>
       }
+
+      <!-- VISTA 3: CONFIGURAR DESCUENTOS Y CUPONES -->
+      @else if (adminTabActiva() === 'descuentos') {
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <h3 style="margin-top: 0; color: var(--color-black);">Configuración de Promociones</h3>
+          
+          <label style="font-size: 14px; color: var(--color-black);"><strong>Descuento Primera Compra (%):</strong></label>
+          <input type="number" [value]="adminFirstDiscount()" (input)="adminFirstDiscount.set(+$any($event.target).value)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; color: var(--color-black); background-color: var(--color-white);">
+
+          <label style="font-size: 14px; color: var(--color-black);"><strong>Descuento Mayores de 50 Años (%):</strong></label>
+          <input type="number" [value]="adminSeniorDiscount()" (input)="adminSeniorDiscount.set(+$any($event.target).value)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; color: var(--color-black); background-color: var(--color-white);">
+
+          <button (click)="guardarConfigDescuentos()" style="margin-top: 20px; padding: 15px; background-color: var(--color-black); color: var(--color-white); border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">
+            Guardar Cambios de Descuentos
+          </button>
+        </div>
+      }
+
     </div>
   }
   @else {
@@ -177,10 +203,15 @@
         </select>
       </div>
 
-      <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; max-width: 1400px; margin: 0 auto;">
-        @for (movie of movies(); track movie.id) {
+     <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; max-width: 1400px; margin: 0 auto;">
+        @for (movie of peliculasFiltradas(); track movie.id) {
           <div style="border: 1px solid #e5e7eb; padding: 16px; width: 300px; border-radius: 12px; background-color: var(--color-white); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);">
-            
+            <!-- ETIQUETA TOP 3 -->
+            @if (movie.ranking <= 3) {
+              <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; margin-bottom: 10px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                 #{{ movie.ranking }} Más Vendida
+              </div>
+            }
             @if (movie.poster_url) {
               <img [src]="movie.poster_url" alt="{{ movie.title }}" style="width: 100%; height: 350px; object-fit: cover; border-radius: 8px; margin-bottom: 12px;">
             } @else {
