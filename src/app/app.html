@@ -1,5 +1,8 @@
+<!-- Cabecera de la página con el título y el botón para volver -->
 <header style="padding: 20px; border-bottom: 1px solid var(--color-gray-light); display: flex; justify-content: space-between; align-items: center;">
   <h1 style="margin: 0; font-size: 22px;">Cinema Manager</h1>
+  
+  <!-- Muestro el botón de volver atrás solo si ya salió de la pantalla inicial -->
   @if (modoAuth() !== 'ninguno' || peliculaSeleccionada()) {
     <button (click)="volver()" style="padding: 6px 14px; background: transparent; color: var(--color-white, #fff); border: 1px solid var(--color-gray-medium); border-radius: 4px; cursor: pointer; font-size: 13px;">
       ← Volver al inicio
@@ -8,14 +11,14 @@
 </header>
 
 <main style="padding: 20px;">
-  <!-- BOTÓN PARA ENTRAR/SALIR DEL MODO ADMIN -->
+  <!-- Botón para abrir o cerrar el panel de administrador -->
   <div style="text-align: right; margin-bottom: 20px;">
     <button (click)="modoAdmin.set(!modoAdmin())" style="padding: 10px 20px; background-color: var(--color-gray-dark); color: var(--color-white); border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
       {{ modoAdmin() ? 'Cerrar Panel Admin' : ' Modo Administrador' }}
     </button>
   </div>
 
-  <!-- 1. PANTALLA DE BIENVENIDA / LOGIN INICIAL -->
+  <!-- Pantalla de inicio: te deja elegir si entrar como invitado o crear cuenta -->
   @if (modoAuth() === 'ninguno' && !peliculaSeleccionada() && !modoAdmin()) {
     <div style="max-width: 450px; margin: 60px auto; background-color: var(--color-card-bg, #1a1a1a); padding: 40px; border-radius: 12px; border: 1px solid var(--color-gray-medium); text-align: center;">
       <h2 style="margin-top: 0; color: var(--color-white, #fff); font-size: 26px;">Bienvenido a Cinema Manager</h2>
@@ -35,7 +38,7 @@
     </div>
   }
 
-  <!-- 2. FORMULARIO DE REGISTRO -->
+  <!-- Formulario largo para registrar un nuevo cliente -->
   @else if (modoAuth() === 'registro' && !peliculaSeleccionada() && !modoAdmin()) {
     <div style="max-width: 450px; margin: 20px auto; background-color: var(--color-white); padding: 30px; border-radius: 8px; border: 1px solid var(--color-black);">
       <h2 style="text-align: center; margin-top: 0; border-bottom: 2px solid var(--color-black); padding-bottom: 10px; color: var(--color-black);">Creá tu cuenta</h2>
@@ -43,6 +46,7 @@
       
       <div style="display: flex; flex-direction: column; gap: 15px;">
         <input type="text" placeholder="Nombre completo" (input)="actualizarNombre($event)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; background-color: var(--color-white); color: var(--color-black);">
+        <!-- Pido la fecha de nacimiento para poder calcular la edad del usuario después -->
         <input type="date" placeholder="Fecha de nacimiento" (input)="actualizarNacimiento($event)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; background-color: var(--color-white); color: var(--color-black);">
         <input type="email" placeholder="Correo electrónico" (input)="regEmail.set($any($event.target).value); actualizarEmail($event)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; background-color: var(--color-white); color: var(--color-black);">
         <input type="password" placeholder="Contraseña (mínimo 6 caracteres)" (input)="regPassword.set($any($event.target).value); actualizarPassword($event)" style="padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 4px; background-color: var(--color-white); color: var(--color-black);">
@@ -62,13 +66,12 @@
     </div>
   }
 
-  <!-- PANEL DE ADMINISTRACIÓN -->
- <!-- PANEL DE ADMINISTRACIÓN -->
+  <!-- Panel exclusivo para el administrador -->
   @else if (modoAdmin()) {
     <div style="max-width: 800px; margin: 0 auto; background-color: var(--color-white); padding: 30px; border-radius: 8px; border: 1px solid var(--color-black);">
       <h2 style="border-bottom: 2px solid var(--color-black); padding-bottom: 10px; margin-top: 0; color: var(--color-black);">Panel de Administración</h2>
 
-      <!-- Pestañas del Admin (¡TODAS JUNTAS AQUÍ ADENTRO!) -->
+      <!-- Pestañas para cambiar entre las distintas opciones del admin -->
       <div style="display: flex; gap: 20px; border-bottom: 1px solid var(--color-gray-medium); padding-bottom: 10px; margin-bottom: 20px;">
          <button (click)="adminTabActiva.set('funciones')" 
                  [style.border-bottom]="adminTabActiva() === 'funciones' ? '2px solid var(--color-black)' : 'none'"
@@ -92,7 +95,7 @@
          </button>
       </div>
 
-      <!-- VISTA 1: PROGRAMAR FUNCIONES -->
+      <!-- Vista 1 del admin: acá se asignan las funciones y la sala sola -->
       @if (adminTabActiva() === 'funciones') {
         <div style="display: flex; flex-direction: column; gap: 15px;">
           <label style="font-size: 14px; color: var(--color-black);"><strong>Película:</strong></label>
@@ -131,7 +134,7 @@
         </div>
       }
 
-      <!-- VISTA 2: CREAR PRODUCTOS DE CANDY BAR -->
+      <!-- Vista 2 del admin: cargar snacks nuevos a la base de datos -->
       @else if (adminTabActiva() === 'candy') {
         <div style="display: flex; flex-direction: column; gap: 15px;">
           <h3 style="margin-top: 0; color: var(--color-black);">Nuevo Producto para el Candy Bar</h3>
@@ -159,7 +162,7 @@
         </div>
       }
 
-      <!-- VISTA 3: CONFIGURAR DESCUENTOS Y CUPONES -->
+      <!-- Vista 3 del admin: cambiar los porcentajes de descuento -->
       @else if (adminTabActiva() === 'descuentos') {
         <div style="display: flex; flex-direction: column; gap: 15px;">
           <h3 style="margin-top: 0; color: var(--color-black);">Configuración de Promociones</h3>
@@ -178,12 +181,15 @@
 
     </div>
   }
+
+  <!-- Empieza la parte del cliente (Cartelera, Butacas y Pago) -->
   @else {
     
+    <!-- Cartelera: muestro el buscador y todas las películas -->
     @if (!peliculaSeleccionada()) {
-      <!-- 3. CARTELERA Y BUSCADOR -->
       <h2 style="margin-bottom: 20px;">Cartelera de hoy</h2>
       
+      <!-- Buscador por texto y filtro por género -->
       <div style="display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap;">
         <input type="text" 
                placeholder="Buscar película por título o sinopsis..." 
@@ -206,12 +212,14 @@
      <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; max-width: 1400px; margin: 0 auto;">
         @for (movie of peliculasFiltradas(); track movie.id) {
           <div style="border: 1px solid #e5e7eb; padding: 16px; width: 300px; border-radius: 12px; background-color: var(--color-white); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);">
-            <!-- ETIQUETA TOP 3 -->
+            
+            <!-- Etiqueta naranja solo para las 3 películas más vendidas -->
             @if (movie.ranking <= 3) {
               <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; margin-bottom: 10px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
                  #{{ movie.ranking }} Más Vendida
               </div>
             }
+            
             @if (movie.poster_url) {
               <img [src]="movie.poster_url" alt="{{ movie.title }}" style="width: 100%; height: 350px; object-fit: cover; border-radius: 8px; margin-bottom: 12px;">
             } @else {
@@ -239,8 +247,8 @@
       </div>
     } 
       
+    <!-- Paso para ver reseñas y elegir a qué hora querés ver la peli -->
     @else if (peliculaSeleccionada() && !funcionSeleccionada()) {
-      <!-- PASO INTERMEDIO: SELECCIÓN DE FUNCIÓN Y RESEÑAS -->
       <div style="max-width: 900px; margin: 0 auto; text-align: center;">
         
         <div style="display: flex; gap: 25px; background: var(--color-card-bg, #1a1a1a); padding: 25px; border-radius: 12px; border: 1px solid var(--color-gray-medium); text-align: left; margin-bottom: 30px; align-items: center;">
@@ -268,6 +276,7 @@
                 <strong>Formato:</strong> {{ funcion.formato }} <br>
                 <strong>Idioma:</strong> {{ funcion.idioma }}
               </p>
+              <!-- Botón para elegir el horario (acá también valida si es menor de edad) -->
               <button (click)="seleccionarFuncion(funcion)" style="margin-top: 15px; width: 100%; padding: 10px; background-color: var(--color-white, #fff); color: var(--color-black, #000); border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
                 Elegir Horario
               </button>
@@ -277,7 +286,7 @@
           }
         </div>
 
-        <!-- SECCIÓN DE RESEÑAS Y CALIFICACIONES -->
+        <!-- Parte donde la gente deja y lee los comentarios -->
         <div style="background: var(--color-card-bg, #1a1a1a); padding: 25px; border-radius: 12px; border: 1px solid var(--color-gray-medium); text-align: left; margin-bottom: 30px;">
           <h3 style="margin-top: 0; border-bottom: 1px solid var(--color-gray-medium); padding-bottom: 10px; color: var(--color-white, #fff);">Reseñas de la comunidad</h3>
           
@@ -323,8 +332,8 @@
       </div>
     }
 
+    <!-- Dibujo de la sala de cine para elegir los asientos -->
     @else if (funcionSeleccionada() && !mostrarCheckout()) {
-      <!-- SELECCIÓN DE BUTACAS -->
       <div>
         <h2 style="margin-bottom: 20px;">Entradas para: {{ peliculaSeleccionada().title }}</h2>
         
@@ -339,14 +348,14 @@
                  <div style="display: flex; gap: 4px; width: 120px; justify-content: flex-end;">
                    @for (asiento of fila.bloqueIzq; track asiento.id) {
                      <button (click)="toggleAsiento(asiento)"
-                            [disabled]="asiento.ocupada"
-                            [style.background-color]="asiento.ocupada ? '#333333' : (asiento.seleccionada ? '#22c55e' : (asiento.tipo === 'vip' ? '#f59e0b' : 'var(--color-white)'))"
-                            [style.color]="asiento.ocupada ? '#666666' : (asiento.seleccionada ? '#000000' : 'var(--color-black)')"
-                            [style.border]="asiento.ocupada ? '1px solid #222222' : (asiento.tipo === 'accesible' ? '2px dashed var(--color-gray-dark)' : (asiento.tipo === 'vip' ? '2px solid #b45309' : '1px solid var(--color-gray-medium)'))"
-                            [style.border-radius]="asiento.tipo === 'accesible' ? '50%' : '3px'"
-                            [style.cursor]="asiento.ocupada ? 'not-allowed' : 'pointer'"
-                            style="width: 26px; height: 26px; padding: 0; font-size: 10px; font-weight: bold; transition: 0.2s;">
-                       {{ asiento.numero }}
+                             [disabled]="asiento.ocupada"
+                             [style.background-color]="asiento.ocupada ? '#333333' : (asiento.seleccionada ? '#22c55e' : (asiento.tipo === 'vip' ? '#f59e0b' : 'var(--color-white)'))"
+                             [style.color]="asiento.ocupada ? '#666666' : (asiento.seleccionada ? '#000000' : 'var(--color-black)')"
+                             [style.border]="asiento.ocupada ? '1px solid #222222' : (asiento.tipo === 'accesible' ? '2px dashed var(--color-gray-dark)' : (asiento.tipo === 'vip' ? '2px solid #b45309' : '1px solid var(--color-gray-medium)'))"
+                             [style.border-radius]="asiento.tipo === 'accesible' ? '50%' : '3px'"
+                             [style.cursor]="asiento.ocupada ? 'not-allowed' : 'pointer'"
+                             style="width: 26px; height: 26px; padding: 0; font-size: 10px; font-weight: bold; transition: 0.2s;">
+                        {{ asiento.numero }}
                      </button>
                    }
                  </div>
@@ -354,14 +363,14 @@
                  <div style="display: flex; gap: 4px; width: 600px; justify-content: center;">
                    @for (asiento of fila.bloqueCentro; track asiento.id) {
                      <button (click)="toggleAsiento(asiento)" 
-                            [disabled]="asiento.ocupada"
-                            [style.background-color]="asiento.ocupada ? '#333333' : (asiento.seleccionada ? '#22c55e' : (asiento.tipo === 'vip' ? '#f59e0b' : 'var(--color-white)'))"
-                            [style.color]="asiento.ocupada ? '#666666' : (asiento.seleccionada ? '#000000' : 'var(--color-black)')"
-                            [style.border]="asiento.ocupada ? '1px solid #222222' : (asiento.tipo === 'accesible' ? '2px dashed var(--color-gray-dark)' : (asiento.tipo === 'vip' ? '2px solid #b45309' : '1px solid var(--color-gray-medium)'))"
-                            [style.border-radius]="asiento.tipo === 'accesible' ? '50%' : '3px'"
-                            [style.cursor]="asiento.ocupada ? 'not-allowed' : 'pointer'"
-                            style="width: 26px; height: 26px; padding: 0; font-size: 10px; font-weight: bold; transition: 0.2s;">
-                       {{ asiento.numero }}
+                             [disabled]="asiento.ocupada"
+                             [style.background-color]="asiento.ocupada ? '#333333' : (asiento.seleccionada ? '#22c55e' : (asiento.tipo === 'vip' ? '#f59e0b' : 'var(--color-white)'))"
+                             [style.color]="asiento.ocupada ? '#666666' : (asiento.seleccionada ? '#000000' : 'var(--color-black)')"
+                             [style.border]="asiento.ocupada ? '1px solid #222222' : (asiento.tipo === 'accesible' ? '2px dashed var(--color-gray-dark)' : (asiento.tipo === 'vip' ? '2px solid #b45309' : '1px solid var(--color-gray-medium)'))"
+                             [style.border-radius]="asiento.tipo === 'accesible' ? '50%' : '3px'"
+                             [style.cursor]="asiento.ocupada ? 'not-allowed' : 'pointer'"
+                             style="width: 26px; height: 26px; padding: 0; font-size: 10px; font-weight: bold; transition: 0.2s;">
+                        {{ asiento.numero }}
                      </button>
                    }
                  </div>
@@ -369,14 +378,14 @@
                  <div style="display: flex; gap: 4px; width: 120px; justify-content: flex-start;">
                    @for (asiento of fila.bloqueDer; track asiento.id) {
                      <button (click)="toggleAsiento(asiento)"
-                            [disabled]="asiento.ocupada"
-                            [style.background-color]="asiento.ocupada ? '#333333' : (asiento.seleccionada ? '#22c55e' : (asiento.tipo === 'vip' ? '#f59e0b' : 'var(--color-white)'))"
-                            [style.color]="asiento.ocupada ? '#666666' : (asiento.seleccionada ? '#000000' : 'var(--color-black)')"
-                            [style.border]="asiento.ocupada ? '1px solid #222222' : (asiento.tipo === 'accesible' ? '2px dashed var(--color-gray-dark)' : (asiento.tipo === 'vip' ? '2px solid #b45309' : '1px solid var(--color-gray-medium)'))"
-                            [style.border-radius]="asiento.tipo === 'accesible' ? '50%' : '3px'"
-                            [style.cursor]="asiento.ocupada ? 'not-allowed' : 'pointer'"
-                            style="width: 26px; height: 26px; padding: 0; font-size: 10px; font-weight: bold; transition: 0.2s;">
-                       {{ asiento.numero }}
+                             [disabled]="asiento.ocupada"
+                             [style.background-color]="asiento.ocupada ? '#333333' : (asiento.seleccionada ? '#22c55e' : (asiento.tipo === 'vip' ? '#f59e0b' : 'var(--color-white)'))"
+                             [style.color]="asiento.ocupada ? '#666666' : (asiento.seleccionada ? '#000000' : 'var(--color-black)')"
+                             [style.border]="asiento.ocupada ? '1px solid #222222' : (asiento.tipo === 'accesible' ? '2px dashed var(--color-gray-dark)' : (asiento.tipo === 'vip' ? '2px solid #b45309' : '1px solid var(--color-gray-medium)'))"
+                             [style.border-radius]="asiento.tipo === 'accesible' ? '50%' : '3px'"
+                             [style.cursor]="asiento.ocupada ? 'not-allowed' : 'pointer'"
+                             style="width: 26px; height: 26px; padding: 0; font-size: 10px; font-weight: bold; transition: 0.2s;">
+                        {{ asiento.numero }}
                      </button>
                    }
                  </div>
@@ -390,7 +399,7 @@
             <strong>PANTALLA</strong>
           </div>
 
-          <!-- LEYENDA DE COLORES ACTUALIZADA -->
+          <!-- Cuadritos de colores para explicar qué es cada butaca -->
           <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px; font-size: 14px; color: var(--color-gray-dark); flex-wrap: wrap;">
             <div style="display: flex; align-items: center; gap: 5px;">
               <div style="width: 15px; height: 15px; border: 1px solid var(--color-gray-medium); background-color: var(--color-white); border-radius: 3px;"></div> Normal
@@ -410,6 +419,7 @@
           </div>
         </div>
         
+        <!-- Recuadro que muestra qué butacas elegiste y avisa si sos menor -->
         @if (asientosSeleccionados().length > 0) {
           <div style="margin: 40px auto; max-width: 600px; padding: 25px; border: 1px solid #444; border-radius: 8px; background-color: #1e1e1e; color: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
             
@@ -425,6 +435,12 @@
             @if (tieneVip()) {
               <div style="margin: 15px 0; padding: 12px; border-left: 4px solid #f59e0b; background-color: rgba(245,158,11,0.1); font-size: 14px; color: #fde68a;">
                 <strong>Aviso:</strong> Tenés butacas VIP (Filas R, S, T) en tu selección. Estas ubicaciones tienen un valor superior al de la entrada general.
+              </div>
+            }
+
+            @if (peliculaSeleccionada()?.min_age > 0) {
+              <div style="margin: 15px 0; padding: 12px; border-left: 4px solid #ef4444; background-color: rgba(239,68,68,0.1); font-size: 14px; color: #fca5a5;">
+                <strong>Aviso Legal (+{{ peliculaSeleccionada()?.min_age }}):</strong> Menores de edad deben concurrir obligatoriamente acompañados por un adulto.
               </div>
             }
 
@@ -445,14 +461,12 @@
       </div>
     }
 
+    <!-- Paso final: Candy bar y pagar -->
     @else {
-      <!-- CHECKOUT / INVITADO / REGISTRO / FACTURA -->
       <div style="max-width: 800px; margin: 0 auto; text-align: center;">
         
-        <!-- El formulario de pago solo se muestra SI NO se generó la factura aún -->
         @if (!facturaGenerada()) {
           
-          <!-- SECCIÓN CANDY BAR PARA EL CLIENTE -->
           <div style="margin-bottom: 30px; background-color: var(--color-card-bg, #1a1a1a); padding: 25px; border-radius: 12px; border: 1px solid var(--color-gray-medium); text-align: left; color: var(--color-white);">
             <h3 style="margin-top: 0; text-align: center; border-bottom: 1px solid var(--color-gray-medium); padding-bottom: 10px;">🍿 Agregá algo rico a tu función</h3>
             
@@ -488,7 +502,6 @@
 
           <h2 style="margin-bottom: 10px; color: var(--color-white, #fff);">¿Cómo querés continuar?</h2>
           
-          <!-- Si el usuario se registró, aplicamos el 20% en las entradas y mostramos un botón directo -->
           @if (modoAuth() === 'registrado') {
             <div style="max-width: 450px; margin: 0 auto; background-color: var(--color-card-bg, #1a1a1a); padding: 30px; border-radius: 12px; border: 1px solid var(--color-gray-medium); text-align: left;">
               <h3 style="margin-top: 0; text-align: center; color: #4ade80;">¡Descuento de Usuario Registrado (20% OFF)!</h3>
@@ -507,7 +520,6 @@
             </div>
           } 
           
-          <!-- Si entró como invitado, sí le pedimos el correo -->
           @else {
             <p style="color: var(--color-gray-dark, #aaa); margin-bottom: 30px;">Estás a un paso de confirmar tu compra por <strong>${{ subtotal() + subtotalCandy() }}</strong></p>
 
@@ -526,7 +538,7 @@
           }
         }
 
-        <!-- FACTURA DE COMPRA -->
+        <!-- Ticket final con el código QR -->
         @if (mostrarCheckout() && facturaGenerada()) {
           <div style="max-width: 500px; margin: 20px auto; background-color: var(--color-white); padding: 30px; border-radius: 8px; border: 1px solid var(--color-black); text-align: center; color: var(--color-black);">
             <h2 style="border-bottom: 2px solid var(--color-black); padding-bottom: 10px; margin-top: 0;">Factura de Compra</h2>
